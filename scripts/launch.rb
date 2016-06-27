@@ -1,9 +1,9 @@
 require 'json'
 require 'net/http'
 print "Please enter your AWS Access Key: "
-ENV['AWS_ACCESS_KEY_ID']      = gets()
+ENV['AWS_ACCESS_KEY_ID']      = gets().chomp
 print "Please enter your AWS Secret: "
-ENV['AWS_SECRET_ACCESS_KEY']  = gets()
+ENV['AWS_SECRET_ACCESS_KEY']  = gets().chomp
 
 # Create and configure VPC and networking
 vpc = JSON.parse(`aws ec2 create-vpc --cidr-block 10.0.0.0/16`)["Vpc"]["VpcId"]
@@ -36,3 +36,6 @@ JSON.parse(`bundle exec knife search node 'role:elasticsearch' -F json -a ec2.pu
 instances.each do |ip|
   system("ssh ubuntu@#{ip} -i kpkrishnamoorthy.pem 'sudo chef-client'")
 end
+
+puts "3 VMs launched in VPC ID '#{vpc}', with public IPs '#{instances}'"
+puts "Point your browser to 'http://#{instances.first}:9200/_plugin/kopf' to view the cluster."
